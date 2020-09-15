@@ -69,7 +69,7 @@ casClient
     // eg. this.props.history.replace(response.currentPath);
   });
 
-// If you want to use as gateway
+// Login with gateway
 let gateway = true;
 
 casClient
@@ -96,9 +96,9 @@ Apply gateway param to CAS login url when `gateway` is given ([Documentation](ht
 // Assume current url is https://localhost.com/
 
 // Basic usage
-casClient.logout(redirectPath);
+casClient.logout();
 
-// If you want to apply redirect url to CAS logout url
+// Apply redirect url to CAS logout url
 // You can applied redirectPath.
 // In this case, https://localhost.com/logout will be applied to logout url
 let redirectPath = "/logout";
