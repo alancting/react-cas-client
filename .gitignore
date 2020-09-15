@@ -27,6 +27,8 @@ node_modules/
 .pnp.*
 
 lib
+
+coverage
 ###### Nodejs ######
 
 ###### VScode ######
