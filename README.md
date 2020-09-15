@@ -29,8 +29,8 @@ yarn add react-cas-client
 ```javascript
 import CasClient, { constant } from "react-cas-client";
 
-let casEndpoint;
-let casOptions = {};
+let casEndpoint = "xxxx.casserver.com";
+let casOptions = { version: constant.CAS_VERSION_2_0 };
 
 let casClient = new CasClient(casEndpoint, casOptions);
 ```
