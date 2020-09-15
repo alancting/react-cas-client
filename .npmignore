@@ -1,0 +1,12 @@
+.DS_Store
+*.log
+node_modules
+src
+test
+.babelrc
+.eslintrc
+.gitignore
+.npmignore
+.prettierrc
+package-lock.json
+yarn.lock
