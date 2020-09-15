@@ -24,13 +24,34 @@ yarn add react-cas-client
 
 ## Usage
 
+### Initialize CAS Client
+
 ```javascript
 import CasClient, { constant } from "react-cas-client";
 
 let casEndpoint;
 let casOptions = {};
 
-new CasClient(casEndpoint, casOptions)
+let casClient = new CasClient(casEndpoint, casOptions);
+```
+
+#### CAS Endpoint
+
+Endpoint of CAS Server (eg. `'xxxx.casserver.com'`)
+
+#### CAS Options
+
+- `path` - CAS server service path (eg. `'/cas-tmp'`) (default: `'/cas'`)
+- `protocol` - CAS server protocol, can be `'http'`, `'https'`) (default: `'https'`);
+- `version` - CAS protocol version can be `constant.CAS_VERSION_2_0`, `constant.CAS_VERSION_3_0` (default: `constant.CAS_VERSION_3_0`)
+- `validation_proxy_path` - Proxy path for application to make call to CAS server to validate ticket (**!! Related to CORS issue !!**)
+
+### Start authorization flow (Login)
+
+```javascript
+// Basic usage
+casClient
+  .auth()
   .then(successRes => {
     console.log(successRes);
     // Login user in state / locationStorage ()
@@ -47,24 +68,48 @@ new CasClient(casEndpoint, casOptions)
     // Update current path to trim any extra params in url
     // eg. this.props.history.replace(response.currentPath);
   });
+
+// If you want to use as gateway
+let gateway = true;
+
+casClient
+  .auth(gateway)
+  .then(successRes => {})
+  .catch(errorRes => {});
 ```
 
-### CAS Endpoint:
+#### Gateway
 
-Endpoint of CAS Server (eg. `'xxxx.casserver.com'`)
+Apply gateway param to CAS login url when `gateway` is given ([Documentation](https://apereo.github.io/cas/6.0.x/protocol/CAS-Protocol-V2-Specification.html#211-parameters))
 
-### CAS Options
+- Boolean: `true` / `false` (default: `false`)
 
-- `path` - CAS server service path (eg. `'/cas-tmp'`) (default: `'/cas'`)
-- `protocol` - CAS server protocol, can be `'http'`, `'https'`) (default: `'https'`);
-- `version` - CAS protocol version can be `constant.CAS_VERSION_2_0`, `constant.CAS_VERSION_3_0` (default: `constant.CAS_VERSION_3_0`)
-- `validation_proxy_path` - Proxy path for application to make call to CAS server to validate ticket (**!! Related to CORS issue !!**)
-
-### Possible Error Types
+#### Possible Error Types
 
 - `constant.CAS_ERROR_FETCH` - Error when validating ticket with CAS Server:
 - `constant.CAS_ERROR_PARSE_RESPONSE` - Cannot parse response from CAS server
 - `constant.CAS_ERROR_AUTH_ERROR` - User is not authorized
+
+### Logout CAS
+
+```javascript
+// Assume current url is https://localhost.com/
+
+// Basic usage
+casClient.logout(redirectPath);
+
+// If you want to apply redirect url to CAS logout url
+// You can applied redirectPath.
+// In this case, https://localhost.com/logout will be applied to logout url
+let redirectPath = "/logout";
+casClient.logout(redirectPath);
+```
+
+#### Redirect Path
+
+Apply redirect url to CAS logout url when `refirectPath` is given ([Documentation](https://apereo.github.io/cas/6.0.x/protocol/CAS-Protocol-V2-Specification.html#211-parameters))
+
+- String: any path (default: `/`)
 
 ## CORS Issue
 
