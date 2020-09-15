@@ -1,7 +1,8 @@
-[![NPM](https://img.shields.io/npm/v/react-cas-client.svg)](https://www.npmjs.com/package/react-cas-client)
-[![Node.js CI](https://github.com/alancting/react-cas-client/workflows/Node.js%20CI/badge.svg)](https://github.com/alancting/react-cas-client)
-[![Coverage Status](https://coveralls.io/repos/github/alancting/react-cas-client/badge.svg?branch=master)](https://coveralls.io/github/alancting/react-cas-client?branch=master)
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/alancting/react-cas-client/blob/master/LICENSE)
+[![NPM](https://img.shields.io/npm/v/react-cas-client?style=for-the-badge)](https://www.npmjs.com/package/react-cas-client)
+[![GitHub](https://img.shields.io/github/package-json/v/alancting/react-cas-client?label=%20GitHub&style=for-the-badge)](https://github.com/alancting/react-cas-client)  
+[![Test](https://img.shields.io/github/workflow/status/alancting/react-cas-client/Node.js%20CI?label=TEST&style=for-the-badge)](https://github.com/alancting/react-cas-client)
+[![Coverage Status](https://img.shields.io/coveralls/github/alancting/react-cas-client/master?style=for-the-badge)](https://coveralls.io/github/alancting/react-cas-client?branch=master)  
+[![GitHub license](https://img.shields.io/github/license/alancting/react-cas-client?color=blue&style=for-the-badge)](https://github.com/alancting/react-cas-client/blob/master/LICENSE)
 
 # React CAS Client
 
