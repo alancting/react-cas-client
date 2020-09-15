@@ -1,6 +1,6 @@
 {
   "name": "react-cas-client",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Simple CAS Client for CAS 2.0 and 3.0 protocol",
   "author": "alancting",
   "license": "MIT",
@@ -42,5 +42,11 @@
   "jest": {
     "testURL": "https://mock.testing.com"
   },
-  "keywords": ["react", "apereo", "cas", "cas-client", "react-cas-client"]
+  "keywords": [
+    "react",
+    "apereo",
+    "cas",
+    "cas-client",
+    "react-cas-client"
+  ]
 }
