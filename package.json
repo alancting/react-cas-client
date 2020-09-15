@@ -18,7 +18,8 @@
     "test": "jest",
     "lint": "eslint src/ test/",
     "clean": "rm -rf build",
-    "build": "babel src --out-dir lib"
+    "build": "babel src --out-dir lib",
+    "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls"
   },
   "dependencies": {
     "build-url": "^6.0.1",
@@ -43,11 +44,5 @@
   "jest": {
     "testURL": "https://mock.testing.com"
   },
-  "keywords": [
-    "react",
-    "apereo",
-    "cas",
-    "cas-client",
-    "react-cas-client"
-  ]
+  "keywords": ["react", "apereo", "cas", "cas-client", "react-cas-client"]
 }
