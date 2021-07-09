@@ -24,6 +24,8 @@ yarn add react-cas-client
 
 ## Usage
 
+Example: [alancting/react-cas-client-example](https://github.com/alancting/react-cas-client-example)
+
 ### Initialize CAS Client
 
 ```javascript
