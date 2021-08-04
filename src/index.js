@@ -40,7 +40,7 @@ class CasClient {
       if (util.isEmpty(ticket)) {
         let status = util.getParamFromCurrentUrl('status');
         if (status === constant.CAS_STATUS_IN_PROCESS) {
-          this._handleFailsValdiate(reject, {
+          this._handleFailsValidate(reject, {
             type: constant.CAS_ERROR_AUTH_ERROR,
             message: 'Missing ticket from return url',
           });
@@ -57,11 +57,12 @@ class CasClient {
     window.location.href = urls.getLogoutUrl(this, redirectPath);
   }
 
-  _getSuccessResponse(user) {
+  _getSuccessResponse(user, attributes) {
     return {
       currentUrl: window.location.origin + window.location.pathname,
       currentPath: window.location.pathname,
       user: user,
+      attributes: attributes,
     };
   }
 
@@ -85,46 +86,46 @@ class CasClient {
       },
     })
       .then(
-        function (response) {
+        function(response) {
           response
             .text()
             .then(
-              function (text) {
+              function(text) {
                 switch (version) {
                   case constant.CAS_VERSION_2_0:
                     xml2js
                       .parseStringPromise(text)
                       .then(
-                        function (result) {
+                        function(result) {
                           let response = result['cas:serviceResponse'];
                           if (response['cas:authenticationSuccess']) {
                             let successes =
                               response['cas:authenticationSuccess'];
                             if (successes.length) {
                               let user = successes[0]['cas:user'][0];
-                              this._handleSuccessValdiate(resolve, user);
+                              this._handleSuccessValidate(resolve, user, null);
                             }
                           } else {
                             let failures =
                               response['cas:authenticationFailure'];
                             if (failures.length) {
-                              this._handleFailsValdiate(reject, {
+                              this._handleFailsValidate(reject, {
                                 type: constant.CAS_ERROR_AUTH_ERROR,
                                 code: failures[0].$.code.trim(),
                                 message: failures[0]._.trim(),
                               });
                             }
                           }
-                        }.bind(this)
+                        }.bind(this),
                       )
                       .catch(
-                        function (error) {
-                          this._handleFailsValdiate(reject, {
+                        function(error) {
+                          this._handleFailsValidate(reject, {
                             type: constant.CAS_ERROR_PARSE_RESPONSE,
                             message: 'Failed to parse response',
                             exception: error,
                           });
-                        }.bind(this)
+                        }.bind(this),
                       );
                     break;
                   case constant.CAS_VERSION_3_0:
@@ -134,20 +135,22 @@ class CasClient {
                         if (json.serviceResponse.authenticationSuccess) {
                           let user =
                             json.serviceResponse.authenticationSuccess.user;
-                          this._handleSuccessValdiate(resolve, user);
+                          let attributes =
+                            json.serviceResponse.authenticationSuccess.attributes;
+                          this._handleSuccessValidate(resolve, user, attributes);
                         } else {
-                          this._handleFailsValdiate(reject, {
+                          this._handleFailsValidate(reject, {
                             type: constant.CAS_ERROR_AUTH_ERROR,
                             code:
-                              json.serviceResponse.authenticationFailure.code,
+                            json.serviceResponse.authenticationFailure.code,
                             message:
-                              json.serviceResponse.authenticationFailure
-                                .description,
+                            json.serviceResponse.authenticationFailure
+                              .description,
                           });
                         }
                       }
                     } catch (error) {
-                      this._handleFailsValdiate(reject, {
+                      this._handleFailsValidate(reject, {
                         type: constant.CAS_ERROR_PARSE_RESPONSE,
                         message: 'Failed to parse response',
                         exception: error,
@@ -157,35 +160,35 @@ class CasClient {
                   default:
                     throw util.throwError('Unsupported CAS Version');
                 }
-              }.bind(this)
+              }.bind(this),
             )
             .catch(
-              function (error) {
-                this._handleFailsValdiate(reject, {
+              function(error) {
+                this._handleFailsValidate(reject, {
                   type: constant.CAS_ERROR_PARSE_RESPONSE,
                   message: 'Failed to parse response',
                   exception: error,
                 });
-              }.bind(this)
+              }.bind(this),
             );
-        }.bind(this)
+        }.bind(this),
       )
       .catch(
-        function (error) {
-          this._handleFailsValdiate(reject, {
+        function(error) {
+          this._handleFailsValidate(reject, {
             type: constant.CAS_ERROR_FETCH,
             message: 'Failed to connect CAS server',
             exception: error,
           });
-        }.bind(this)
+        }.bind(this),
       );
   }
 
-  _handleSuccessValdiate(callback, user) {
-    callback(this._getSuccessResponse(user));
+  _handleSuccessValidate(callback, user, attributes) {
+    callback(this._getSuccessResponse(user, attributes));
   }
 
-  _handleFailsValdiate(callback, error) {
+  _handleFailsValidate(callback, error) {
     error.currentUrl = window.location.origin + window.location.pathname;
     error.currentPath = window.location.pathname;
     callback(error);
