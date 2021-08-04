@@ -135,8 +135,10 @@ class CasClient {
                         if (json.serviceResponse.authenticationSuccess) {
                           let user =
                             json.serviceResponse.authenticationSuccess.user;
-                          let attributes =
-                            json.serviceResponse.authenticationSuccess.attributes;
+                          let attributes = null;
+                          if (json.serviceResponse.authenticationSuccess.attributes) {
+                            attributes = json.serviceResponse.authenticationSuccess.attributes;
+                          }
                           this._handleSuccessValidate(resolve, user, attributes);
                         } else {
                           this._handleFailsValidate(reject, {
