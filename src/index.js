@@ -9,6 +9,7 @@ const defaultOptions = {
   path: '/cas',
   version: constant.CAS_VERSION_3_0,
   validation_proxy_path: '',
+  return_attributes: true,
 };
 
 class CasClient {
@@ -29,6 +30,8 @@ class CasClient {
       options.validation_proxy_path || defaultOptions.validation_proxy_path;
 
     this.redirectUrl = util.getCurrentUrl();
+
+    this.return_attributes = options.return_attributes !== false;
   }
 
   auth(gateway = false) {
@@ -58,12 +61,15 @@ class CasClient {
   }
 
   _getSuccessResponse(user, attributes) {
-    return {
+    let response = {
       currentUrl: window.location.origin + window.location.pathname,
       currentPath: window.location.pathname,
       user: user,
-      attributes: attributes,
     };
+    if (this.return_attributes) {
+      response.attributes = attributes;
+    }
+    return response;
   }
 
   _validateTicket(ticket, resolve, reject) {

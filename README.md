@@ -47,6 +47,7 @@ Endpoint of CAS Server (eg. `'xxxx.casserver.com'`)
 - `protocol` - CAS server protocol, can be `'http'`, `'https'`) (default: `'https'`);
 - `version` - CAS protocol version can be `constant.CAS_VERSION_2_0`, `constant.CAS_VERSION_3_0` (default: `constant.CAS_VERSION_3_0`)
 - `validation_proxy_path` - Proxy path for application to make call to CAS server to validate ticket (**!! Related to CORS issue !!**)
+- `return_attributes` - Whether custom attributes from CAS are returned, can be `true` or `false`, (default: `true`)
 
 ### Start authorization flow (Login)
 
