@@ -5,11 +5,17 @@ const util = require('./util');
 
 const getLoginUrl = (cas, gateway = false) => {
   let baseUrl = _getCasBaseUrl(cas);
-  let queryParams = {
-    service: buildUrl(cas.redirectUrl, {
-      queryParams: { status: constant.CAS_STATUS_IN_PROCESS },
-    }),
-  };
+
+  let queryParams = !util.isParamExistsInUrl(cas.redirectUrl, 'status')
+    ? {
+        service: buildUrl(cas.redirectUrl, {
+          queryParams: { status: constant.CAS_STATUS_IN_PROCESS },
+        }),
+      }
+    : {
+        service: buildUrl(cas.redirectUrl),
+      };
+
   if (gateway) {
     queryParams.gateway = true;
   }
@@ -79,6 +85,10 @@ const getValidateUrl = (cas, ticket) => {
       throw util.throwError('Unsupported CAS Version');
   }
 
+  if (!util.isEmpty(cas.proxy_callback_url)) {
+    queryParams.pgtUrl = cas.proxy_callback_url;
+  }
+
   return buildUrl(baseUrl, {
     path: path,
     queryParams: queryParams,
@@ -86,8 +96,15 @@ const getValidateUrl = (cas, ticket) => {
 };
 
 const _getCasBaseUrl = (cas, withProxyIfExists = false) => {
-  if (withProxyIfExists && !util.isEmpty(cas.validation_proxy_path)) {
-    return window.location.origin + cas.validation_proxy_path + cas.path;
+  if (withProxyIfExists && cas.validation_proxy) {
+    const protocol = !util.isEmpty(cas.validation_proxy_protocol)
+      ? util.getFullProtocol(cas.validation_proxy_protocol)
+      : util.getFullProtocol(window.location.protocol);
+    window.location.origin.replace(/(^\w+:|^)\/\//, '');
+    const endpoint = !util.isEmpty(cas.validation_proxy_endpoint)
+      ? cas.validation_proxy_endpoint
+      : window.location.origin.replace(/(^\w+:|^)\/\//, '');
+    return protocol + endpoint + cas.validation_proxy_path;
   } else {
     return util.getFullProtocol(cas.protocol) + cas.endpoint + cas.path;
   }

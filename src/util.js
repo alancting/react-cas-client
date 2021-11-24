@@ -23,7 +23,12 @@ const getParamFromCurrentUrl = (param) => {
 };
 
 const getFullProtocol = (protocol) => {
-  return protocol === 'http' ? 'http://' : 'https://';
+  return ['http', 'http:'].includes(protocol) ? 'http://' : 'https://';
+};
+
+const isParamExistsInUrl = (url, param) => {
+  const value = new URL(url).searchParams.get(param);
+  return value !== null;
 };
 
 export {
@@ -32,4 +37,5 @@ export {
   getCurrentUrl,
   getParamFromCurrentUrl,
   getFullProtocol,
+  isParamExistsInUrl,
 };

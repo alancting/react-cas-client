@@ -44,9 +44,14 @@ Endpoint of CAS Server (eg. `'xxxx.casserver.com'`)
 #### CAS Options
 
 - `path` - CAS server service path (eg. `'/cas-tmp'`) (default: `'/cas'`)
-- `protocol` - CAS server protocol, can be `'http'`, `'https'`) (default: `'https'`);
+- `protocol` - CAS server protocol, can be `'http'`, `'https'` (default: `'https'`);
 - `version` - CAS protocol version can be `constant.CAS_VERSION_2_0`, `constant.CAS_VERSION_3_0` (default: `constant.CAS_VERSION_3_0`)
-- `validation_proxy_path` - Proxy path for application to make call to CAS server to validate ticket (**!! Related to CORS issue !!**)
+- `proxy_callback_url` - URL of the proxy callback ([pgtUrl](https://apereo.github.io/cas/4.2.x/protocol/CAS-Protocol-Specification.html#251-parameters))
+- `validation_proxy` - Enable validation proxy (boolean) (default: `false`)
+- Only Apply When `validation_proxy` = `true`
+  - `validation_proxy_protocol` - Validation proxy server protocol (`'http'`/`'https'`) (default: **current url protocol**)
+  - `validation_proxy_endpoint` - Validation proxy server endpoint (default: **current endpoint**)
+  - `validation_proxy_path` - Proxy path for application to make call to CAS server to validate ticket  (default: '')
 
 ### Start authorization flow (Login)
 
@@ -58,6 +63,8 @@ casClient
     console.log(successRes);
     // Login user in state / locationStorage ()
     // eg. loginUser(response.user);
+
+    // If proxy_callback_url is set, handle pgtpgtIou with Proxy Application
 
     // Update current path to trim any extra params in url
     // eg. this.props.history.replace(response.currentPath);
@@ -123,13 +130,13 @@ Update CAS server to set `Access-Control-Allow-Origin` for you application
 
 Using reverse proxy in your application, we will use ngnix as example.
 
-1. Update nginx conf to pass request from `*/cas_proxy` to your cas server - `https://xxxx.casserver.com/`
+1. Update nginx conf to pass request from `*/cas_proxy` to your cas server - `https://xxxx.casserver.com/cas`
 
 ```
 # nginx.conf
 
 location /cas_proxy {
-  proxy_pass http://xxxx.casserver.com/;
+  proxy_pass http://xxxx.casserver.com/cas/;
 }
 ```
 

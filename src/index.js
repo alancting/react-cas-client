@@ -8,6 +8,10 @@ const defaultOptions = {
   protocol: 'https',
   path: '/cas',
   version: constant.CAS_VERSION_3_0,
+  proxy_callback_url: '',
+  validation_proxy: false,
+  validation_proxy_protocol: '',
+  validation_proxy_endpoint: '',
   validation_proxy_path: '',
 };
 
@@ -25,6 +29,16 @@ class CasClient {
     this.path = options.path || defaultOptions.path;
     this.protocol = options.protocol || defaultOptions.protocol;
     this.version = options.version || defaultOptions.version;
+    this.proxy_callback_url =
+      options.proxy_callback_url || defaultOptions.proxy_callback_url;
+    this.validation_proxy =
+      options.validation_proxy || defaultOptions.validation_proxy;
+    this.validation_proxy_protocol =
+      options.validation_proxy_protocol ||
+      defaultOptions.validation_proxy_protocol;
+    this.validation_proxy_endpoint =
+      options.validation_proxy_endpoint ||
+      defaultOptions.validation_proxy_endpoint;
     this.validation_proxy_path =
       options.validation_proxy_path || defaultOptions.validation_proxy_path;
 
@@ -36,7 +50,7 @@ class CasClient {
       /**
        * Save ticket to sessionStorage if exists
        */
-      let ticket = util.getParamFromCurrentUrl('ticket');
+      const ticket = util.getParamFromCurrentUrl('ticket');
       if (util.isEmpty(ticket)) {
         let status = util.getParamFromCurrentUrl('status');
         if (status === constant.CAS_STATUS_IN_PROCESS) {
@@ -57,12 +71,16 @@ class CasClient {
     window.location.href = urls.getLogoutUrl(this, redirectPath);
   }
 
-  _getSuccessResponse(user) {
-    return {
+  _getSuccessResponse(user, pgtIou = null) {
+    let response = {
       currentUrl: window.location.origin + window.location.pathname,
       currentPath: window.location.pathname,
       user: user,
     };
+    if (pgtIou) {
+      response.pgtIou = pgtIou;
+    }
+    return response;
   }
 
   _validateTicket(ticket, resolve, reject) {
@@ -102,6 +120,18 @@ class CasClient {
                               response['cas:authenticationSuccess'];
                             if (successes.length) {
                               let user = successes[0]['cas:user'][0];
+
+                              let pgtIou = null;
+                              if (!util.isEmpty(this.proxy_callback_url)) {
+                                pgtIou =
+                                  successes[0]['cas:proxyGrantingTicket'][0];
+                              }
+                              this._handleSuccessValdiate(
+                                resolve,
+                                user,
+                                pgtIou
+                              );
+
                               this._handleSuccessValdiate(resolve, user);
                             }
                           } else {
@@ -134,12 +164,18 @@ class CasClient {
                         if (json.serviceResponse.authenticationSuccess) {
                           let user =
                             json.serviceResponse.authenticationSuccess.user;
-                          this._handleSuccessValdiate(resolve, user);
+                          let pgtIou = null;
+                          if (!util.isEmpty(this.proxy_callback_url)) {
+                            pgtIou =
+                              json.serviceResponse.authenticationSuccess
+                                .proxyGrantingTicket;
+                          }
+                          this._handleSuccessValdiate(resolve, user, pgtIou);
                         } else {
                           this._handleFailsValdiate(reject, {
                             type: constant.CAS_ERROR_AUTH_ERROR,
-                            code:
-                              json.serviceResponse.authenticationFailure.code,
+                            code: json.serviceResponse.authenticationFailure
+                              .code,
                             message:
                               json.serviceResponse.authenticationFailure
                                 .description,
@@ -157,6 +193,7 @@ class CasClient {
                   default:
                     throw util.throwError('Unsupported CAS Version');
                 }
+                throw util.throwError('Stop...');
               }.bind(this)
             )
             .catch(
@@ -181,8 +218,8 @@ class CasClient {
       );
   }
 
-  _handleSuccessValdiate(callback, user) {
-    callback(this._getSuccessResponse(user));
+  _handleSuccessValdiate(callback, user, pgtIou = null) {
+    callback(this._getSuccessResponse(user, pgtIou));
   }
 
   _handleFailsValdiate(callback, error) {
